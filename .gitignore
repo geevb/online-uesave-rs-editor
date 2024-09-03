@@ -36,16 +36,17 @@ acme*.json
 docker-compose.rendered.yml
 
 .env
+.envrc
+
 node_modules/
-package.json
+
+saves/
 
 *.wasm
 *.sqlite*
 *.cpuprofile
 *.local
 *.log
-
-.envrc
 
 /private
 

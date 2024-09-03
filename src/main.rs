@@ -1,21 +1,31 @@
-use axum::{extract::Multipart, routing::get, routing::put, http::Method, Router};
+use axum::{
+    Router,
+    extract::Multipart,
+    http::Method,
+    routing::get,
+    routing::put,
+    response::Json
+};
 use tower_http::cors::{Any, CorsLayer};
-use std::io::{Read, Cursor, BufReader};
+use std::io::{Cursor, BufReader};
+use serde_json::{json, Value};
 use uesave::{Save};
-use serde_json::json;
 
 async fn healthz() -> &'static str {
     "OK!"
 }
 
-async fn upload(mut multipart: Multipart)-> String {
+async fn upload(mut multipart: Multipart) -> Json<Value> {
     if let Some(field) = multipart.next_field().await.unwrap() {
         let data = field.bytes().await.unwrap();
         let cursor = Cursor::new(data);
-        let save = Save::read(&mut BufReader::new(cursor)).unwrap();
-        return json!(save).to_string();
+        match Save::read(&mut BufReader::new(cursor)) {
+            Ok(save) => Json(json!({ "data": save })),
+            Err(_) => Json(json!({ "error": "Failed to parse .sav file" })),
+        }
+    } else {
+        Json(json!({ "error": "No file found" }))
     }
-    json!({}).to_string()
 }
 
 #[shuttle_runtime::main]
