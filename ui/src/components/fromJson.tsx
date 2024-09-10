@@ -1,62 +1,58 @@
-import Dropzone from 'react-dropzone';
+import { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { Download } from '../icons';
 
 export function FromJson() {
+  const [SAVSave, setSAVSave] = useState<Blob>();
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+    onDropAccepted: async (files: File[]) => {
+      const [f] = files;
 
-  async function getSavFromJson(acceptedFiles: File[]) {
-    const [f] = acceptedFiles;
-    if (!f) return;
-
-    if (!f.name.endsWith('.json')) {
-      console.error('Invalid file type');
-      return;
-    }
-
-    let jsonSave = null;
-    try {
-      jsonSave = JSON.parse(await f.text());
-    } catch (e) {
-      console.error('Invalid JSON', e);
-      return;
-    }
-
-    fetch('http://localhost:8000/from_json', {
-      method: 'PUT',
-      body: JSON.stringify(jsonSave),
-      headers: { 'Content-Type': 'application/json' },
-    }).then(r => {
-      if (!r.ok) throw new Error('Network response was not ok');
-      let filename = 'save.sav';
-      const contentDisposition = r.headers.get('Content-Disposition');
-      if (contentDisposition) {
-        const filenamePart = contentDisposition.split(';').map(part => part.trim()).find(p => p.startsWith('filename='));
-        if (filenamePart) {
-          filename = filenamePart.split('=')[1].trim().replace(/^"|"$/g, '');
-        }
+      let jsonSave: object | null = null;
+      try {
+        jsonSave = JSON.parse(await f.text());
+      } catch (e) {
+        console.error('Invalid JSON', e);
+        return;
       }
-      r.blob().then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      })
-    })
+
+      fetch('http://localhost:8000/from_json', {
+        method: 'PUT',
+        body: JSON.stringify(jsonSave),
+        headers: { 'Content-Type': 'application/json' },
+      }).then(r => r.blob()).then(setSAVSave)
+    },
+    maxFiles: 1,
+    accept: { 'application/json': ['.json'] },
+    onError: console.error
+  });
+
+  function onDownload() {
+    const [f] = acceptedFiles;
+    if (!f || !SAVSave) return;
+    const url = window.URL.createObjectURL(SAVSave);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = `${f.name.replace('.json', '')}.sav`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   }
 
   return (
-    <Dropzone onDrop={getSavFromJson} multiple={false}>
-      {({getRootProps, getInputProps}) => (
-        <section>
-          <div {...getRootProps()}>
-            <input {...getInputProps()} />
-            <p>3. From your updated .JSON, recreate the UE .SAV file</p>
-          </div>
-        </section>
-      )}
-    </Dropzone>
+    <section className="card">
+      <h3>3.</h3>
+      <div {...getRootProps({className: 'dropzone'})}>
+        <input {...getInputProps()} />
+        <p>From your updated .JSON, recreate the UE .SAV file</p>
+      </div>
+      <br/>
+      <div style={{visibility: !acceptedFiles.length ? 'visible' : 'hidden'}}>
+        {SAVSave ? (<button onClick={onDownload} title="Download .SAV file"><Download/></button>) :
+          <div className="loader"/>}
+      </div>
+    </section>
   )
 }

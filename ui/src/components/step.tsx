@@ -1,6 +1,9 @@
+import { ArrowRight } from '../icons'
 
 export function Step() {
   return (
-    <div className="step">{'>'}</div>
+    <div className="step">
+      <ArrowRight />
+    </div>
   )
 }

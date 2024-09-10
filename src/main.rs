@@ -3,10 +3,8 @@ use axum::{
     response::IntoResponse, 
     routing::{get, put}, 
     extract::{Json, Multipart},
-    http::{Method, HeaderMap},
-    http::header::{CONTENT_DISPOSITION, CONTENT_TYPE}
+    http::{Method},
 };
-use std::fs::File;
 use tower_http::cors::{Any, CorsLayer};
 use std::io::{Cursor, BufReader};
 use serde_json::{json, Value};
@@ -30,32 +28,12 @@ async fn to_json(mut multipart: Multipart) -> Json<Value> {
 }
 
 async fn from_json(Json(input): Json<Value>) -> impl IntoResponse {
-    let mut headers = HeaderMap::new();
-    headers.insert(CONTENT_TYPE, "application/octet-stream".parse().unwrap());
-    headers.insert(CONTENT_DISPOSITION, "attachment; filename=\"Player_76561197994149843.sav\"".parse().unwrap());
-
-    let s1: Save = Save::read(
-        &mut Box::new(
-            BufReader::new(
-                File::open(&"saves/Player_76561197994149843.sav").unwrap()
-            )
-        )
-    ).unwrap();
-
-    // let json2 = serde_json::to_value(s1).unwrap();
-
-    // let j1: Value = serde_json::from_reader(Box::new(BufReader::new(File::open(&"tmp.json").unwrap()))).unwrap();
-
-    // let j2: Save = serde_json::from_reader(Box::new(BufReader::new(File::open(&"tmp.json").unwrap()))).unwrap();
-
-    // let s2: Save = serde_json::from_value(json2.clone()).unwrap();
-
-    // let s3: Save = serde_json::from_value(input.clone()).unwrap();
+    let save: Save = serde_json::from_value(input.clone()).unwrap();
 
     let mut buffer: Vec<u8> = vec![];
-    s1.write(&mut buffer).unwrap();
+    save.write(&mut buffer).unwrap();
 
-    (headers, buffer)
+    buffer
 }
 
 #[shuttle_runtime::main]
