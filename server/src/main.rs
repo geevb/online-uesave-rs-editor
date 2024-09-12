@@ -1,12 +1,14 @@
 use axum::{
     Router,
+    http::Method,
     response::{IntoResponse, Html}, 
     routing::{get, put}, 
     extract::{Json, Multipart},
-    http::Method,
 };
-use tower_http::cors::{Any, CorsLayer};
-use tower_http::services::ServeDir;
+use tower_http::{
+    cors::CorsLayer, 
+    services::{ServeFile, ServeDir}
+};
 use std::io::{Cursor, BufReader};
 use serde_json::{json, Value};
 use uesave::Save;
@@ -41,11 +43,11 @@ async fn index() -> Html<String> {
 async fn main()-> shuttle_axum::ShuttleAxum {
     let cors = CorsLayer::new()
         .allow_methods([Method::OPTIONS, Method::GET, Method::PUT])
-        .allow_headers([axum::http::header::CONTENT_TYPE])
-        .allow_origin(Any);
+        .allow_headers([axum::http::header::CONTENT_TYPE]);
 
     let router = Router::new()
         .route("/", get(index))
+        .nest_service("/favicon.ico", ServeFile::new("../ui/dist/favicon.ico"))
         .nest_service("/assets", ServeDir::new("../ui/dist/assets"))
         .route("/api/to_json", put(to_json))
         .route("/api/from_json", put(from_json))

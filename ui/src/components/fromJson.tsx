@@ -16,7 +16,7 @@ export function FromJson() {
         return;
       }
 
-      fetch('http://localhost:8000/api/from_json', {
+      fetch('/api/from_json', {
         method: 'PUT',
         body: JSON.stringify(jsonSave),
         headers: { 'Content-Type': 'application/json' },

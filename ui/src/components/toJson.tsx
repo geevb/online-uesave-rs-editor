@@ -12,7 +12,7 @@ export function ToJson() {
       const formData = new FormData();
       formData.append('file', f);
 
-      fetch('http://localhost:8000/api/to_json', {
+      fetch('/api/to_json', {
         method: 'PUT',
         body: formData,
       }).then(r => r.json()).then(({ data }) => setJSONSave(data)).catch(console.error);
