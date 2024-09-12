@@ -43,15 +43,24 @@ export function FromJson() {
 
   return (
     <section className="card">
-      <h3>3.</h3>
+      <h2>3.</h2>
       <div {...getRootProps({className: 'dropzone'})}>
         <input {...getInputProps()} />
         <p>From your updated .JSON, recreate the UE .SAV file</p>
       </div>
       <br/>
-      <div style={{visibility: !acceptedFiles.length ? 'visible' : 'hidden'}}>
-        {SAVSave ? (<button onClick={onDownload} title="Download .SAV file"><Download/></button>) :
-          <div className="loader"/>}
+      <div style={{visibility: acceptedFiles.length ? 'visible' : 'hidden'}}>
+        {SAVSave
+          ? (
+            <button
+              onClick={onDownload}
+              title="Download .SAV file"
+            >
+              <Download/>
+            </button>
+          )
+          : <div className="loader"/>
+        }
       </div>
     </section>
   )

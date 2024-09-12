@@ -24,6 +24,7 @@ export function ToJson() {
 
   function onDownload() {
     const [f] = acceptedFiles;
+    if (!f || !JSONSave) return null;
     const blob = new Blob([JSON.stringify(JSONSave, null, 2)])
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -38,19 +39,28 @@ export function ToJson() {
 
   return (
     <section className="card">
-      <h3>1.</h3>
+      <h2>1.</h2>
       <div {...getRootProps({ className: 'dropzone' })}>
         <input {...getInputProps()} />
         <p>Upload your UE .SAV file and convert it to .JSON</p>
       </div>
       <br/>
-      <div style={{ visibility: !acceptedFiles.length ? 'visible' : 'hidden' }}>
+      <div style={{ visibility: acceptedFiles.length ? 'visible' : 'hidden' }}>
         {JSONSave ? (
           <>
-            <button onClick={onDownload} title="Download .JSON file"><Download/></button>
+            <button
+              onClick={onDownload}
+              title="Download .JSON file"
+            >
+              <Download/>
+            </button>
             {' '}
-            <button onClick={() => navigator.clipboard.writeText(JSON.stringify(JSONSave, null, 2))}
-                    title="Copy JSON to clipboard"><Copy /></button>
+            <button
+              onClick={() => navigator.clipboard.writeText(JSON.stringify(JSONSave, null, 2))}
+              title="Copy JSON to clipboard"
+            >
+              <Copy />
+            </button>
           </>
         ) : <div className="loader" />}
       </div>
