@@ -1,18 +1,15 @@
 use axum::{
     Router,
-    response::IntoResponse, 
+    response::{IntoResponse, Html}, 
     routing::{get, put}, 
     extract::{Json, Multipart},
-    http::{Method},
+    http::Method,
 };
 use tower_http::cors::{Any, CorsLayer};
+use tower_http::services::ServeDir;
 use std::io::{Cursor, BufReader};
 use serde_json::{json, Value};
 use uesave::Save;
-
-async fn healthz() -> &'static str {
-    "OK!"
-}
 
 async fn to_json(mut multipart: Multipart) -> Json<Value> {
     if let Some(field) = multipart.next_field().await.unwrap() {
@@ -36,6 +33,10 @@ async fn from_json(Json(input): Json<Value>) -> impl IntoResponse {
     buffer
 }
 
+async fn index() -> Html<String> {
+    Html(include_str!("../../ui/dist/index.html").to_string())
+}
+
 #[shuttle_runtime::main]
 async fn main()-> shuttle_axum::ShuttleAxum {
     let cors = CorsLayer::new()
@@ -44,9 +45,10 @@ async fn main()-> shuttle_axum::ShuttleAxum {
         .allow_origin(Any);
 
     let router = Router::new()
-        .route("/", get(healthz))
-        .route("/to_json", put(to_json))
-        .route("/from_json", put(from_json))
+        .route("/", get(index))
+        .nest_service("/assets", ServeDir::new("../ui/dist/assets"))
+        .route("/api/to_json", put(to_json))
+        .route("/api/from_json", put(from_json))
         .layer(cors);
 
     Ok(router.into())

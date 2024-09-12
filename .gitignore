@@ -41,6 +41,7 @@ docker-compose.rendered.yml
 node_modules/
 
 saves/
+dist/
 
 *.wasm
 *.sqlite*
@@ -54,7 +55,7 @@ saves/
 !**/glob-import/dir/node_modules
 .idea
 
-ui/.yarn/*
+ui/.yarn
 !.yarn/patches
 !.yarn/releases
 !.yarn/plugins
