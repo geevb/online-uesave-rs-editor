@@ -47,8 +47,10 @@ async fn main()-> shuttle_axum::ShuttleAxum {
 
     let router = Router::new()
         .route("/", get(index))
-        .nest_service("/favicon.ico", ServeFile::new("../ui/dist/favicon.ico"))
         .nest_service("/assets", ServeDir::new("../ui/dist/assets"))
+        .nest_service("/favicon.ico", ServeFile::new("../ui/dist/favicon.ico"))
+        .nest_service("/rust.png", ServeFile::new("../ui/dist/rust.png"))
+        .nest_service("/ue.png", ServeFile::new("../ui/dist/ue.png"))
         .route("/api/to_json", put(to_json))
         .route("/api/from_json", put(from_json))
         .layer(cors);

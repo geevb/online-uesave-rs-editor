@@ -4,7 +4,11 @@ import './App.css';
 function App() {
   return (
     <>
-      <h1>UESave Online</h1>
+      <div>
+        <img className="logo" src="/ue.png" alt="UELogo"/>
+        <img className="logo" src="/rust.png" alt="RustLogo"/>
+      </div>
+      <h1>UESave Online Editor</h1>
       <main className="main">
         <ToJson/>
         <Step/>
@@ -13,7 +17,8 @@ function App() {
         <FromJson/>
       </main>
       <p className="donation">
-        If you found this tool useful, consider donating to the maintainers of <a href="https://github.com/trumank/uesave-rs">uesave</a>.
+        If you found this tool useful, consider supporting the maintainers of <a
+        href="https://github.com/trumank/uesave-rs">uesave-rs</a>.
       </p>
     </>
   )
