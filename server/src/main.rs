@@ -36,7 +36,7 @@ async fn from_json(Json(input): Json<Value>) -> impl IntoResponse {
 }
 
 async fn index() -> Html<String> {
-    Html(include_str!("../../ui/dist/index.html").to_string())
+    Html(include_str!("../dist/index.html").to_string())
 }
 
 #[shuttle_runtime::main]
@@ -47,10 +47,10 @@ async fn main()-> shuttle_axum::ShuttleAxum {
 
     let router = Router::new()
         .route("/", get(index))
-        .nest_service("/assets", ServeDir::new("../ui/dist/assets"))
-        .nest_service("/favicon.ico", ServeFile::new("../ui/dist/favicon.ico"))
-        .nest_service("/rust.png", ServeFile::new("../ui/dist/rust.png"))
-        .nest_service("/ue.png", ServeFile::new("../ui/dist/ue.png"))
+        .nest_service("/assets", ServeDir::new("dist/assets"))
+        .nest_service("/favicon.ico", ServeFile::new("dist/favicon.ico"))
+        .nest_service("/rust.png", ServeFile::new("dist/rust.png"))
+        .nest_service("/ue.png", ServeFile::new("dist/ue.png"))
         .route("/api/to_json", put(to_json))
         .route("/api/from_json", put(from_json))
         .layer(cors);
