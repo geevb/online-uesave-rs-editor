@@ -47,6 +47,12 @@
   border-radius: 5px;
   border: 0.1rem solid #888;
 }
+.dropzone {
+  cursor: pointer;
+  border: 0.1rem solid #4a4a4a;
+  background-color: #333333;
+  border-radius: 5px;
+}
 
 .loader {
   width: 1.5rem;
