@@ -1,9 +1,9 @@
-import { ArrowRight } from '../icons'
+import { ArrowRight } from "../icons";
 
 export function Step() {
   return (
     <div className="step">
       <ArrowRight />
     </div>
-  )
+  );
 }

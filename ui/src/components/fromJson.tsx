@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Download } from '../icons';
+import { useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { Download } from "../icons";
 
 export function FromJson() {
   const [SAVSave, setSAVSave] = useState<Blob>();
@@ -12,29 +12,31 @@ export function FromJson() {
       try {
         jsonSave = JSON.parse(await f.text());
       } catch (e) {
-        console.error('Invalid JSON', e);
+        console.error("Invalid JSON", e);
         return;
       }
 
-      fetch('/api/from_json', {
-        method: 'PUT',
+      fetch("/api/from_json", {
+        method: "PUT",
         body: JSON.stringify(jsonSave),
-        headers: { 'Content-Type': 'application/json' },
-      }).then(r => r.blob()).then(setSAVSave)
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((r) => r.blob())
+        .then(setSAVSave);
     },
     maxFiles: 1,
-    accept: { 'application/json': ['.json'] },
-    onError: console.error
+    accept: { "application/json": [".json"] },
+    onError: console.error,
   });
 
   function onDownload() {
     const [f] = acceptedFiles;
     if (!f || !SAVSave) return;
     const url = window.URL.createObjectURL(SAVSave);
-    const a = document.createElement('a');
-    a.style.display = 'none';
+    const a = document.createElement("a");
+    a.style.display = "none";
     a.href = url;
-    a.download = `${f.name.replace('.json', '')}.sav`;
+    a.download = `${f.name.replace(".json", "")}.sav`;
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
@@ -44,24 +46,20 @@ export function FromJson() {
   return (
     <section className="card">
       <h2>3.</h2>
-      <div {...getRootProps({className: 'dropzone'})}>
+      <div {...getRootProps({ className: "dropzone" })}>
         <input {...getInputProps()} />
         <p>From your updated .JSON, recreate the UE .SAV file</p>
       </div>
-      <br/>
-      <div style={{visibility: acceptedFiles.length ? 'visible' : 'hidden'}}>
-        {SAVSave
-          ? (
-            <button
-              onClick={onDownload}
-              title="Download .SAV file"
-            >
-              <Download/>
-            </button>
-          )
-          : <div className="loader"/>
-        }
+      <br />
+      <div style={{ visibility: acceptedFiles.length ? "visible" : "hidden" }}>
+        {SAVSave ? (
+          <button onClick={onDownload} title="Download .SAV file">
+            <Download />
+          </button>
+        ) : (
+          <div className="loader" />
+        )}
       </div>
     </section>
-  )
+  );
 }
