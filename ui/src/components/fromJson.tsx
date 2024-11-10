@@ -1,18 +1,23 @@
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
+import toast from "react-hot-toast";
 import { Download } from "../icons";
 
 export function FromJson() {
   const [SAVSave, setSAVSave] = useState<Blob>();
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
+  const { getRootProps, getInputProps } = useDropzone({
     onDropAccepted: async (files: File[]) => {
+      setSAVSave(undefined);
+      setAcceptedFiles([]);
       const [f] = files;
 
       let jsonSave: object | null = null;
       try {
         jsonSave = JSON.parse(await f.text());
       } catch (e) {
-        console.error("Invalid JSON", e);
+        toast.error("Invalid JSON file, please fix & try again.")
+        console.error(e);
         return;
       }
 
@@ -22,7 +27,16 @@ export function FromJson() {
         headers: { "Content-Type": "application/json" },
       })
         .then((r) => r.blob())
-        .then(setSAVSave);
+        .then(r => {
+          setSAVSave(r);
+          setAcceptedFiles([f]);
+          toast.success("File converted to .sav successfully!");
+        })
+        .catch(e => {
+          console.error(e);
+          toast.error("Could not convert .json to .sav, please try again.");
+        });
+
     },
     maxFiles: 1,
     accept: { "application/json": [".json"] },

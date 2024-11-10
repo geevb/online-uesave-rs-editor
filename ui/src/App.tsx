@@ -1,9 +1,11 @@
+import { Toaster } from 'react-hot-toast';
 import { ToJson, EditJson, FromJson, Step } from "./components";
 import "./App.css";
 
 function App() {
   return (
     <>
+      <Toaster position="top-center" reverseOrder={true} />
       <div>
         <img className="logo" src="/ue.png" alt="UELogo" />
         <img className="logo" src="/rust.png" alt="RustLogo" />

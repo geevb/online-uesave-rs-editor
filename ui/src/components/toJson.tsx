@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
+import toast from "react-hot-toast";
 import { Copy, Download } from "../icons";
 
 export function ToJson() {
   const [JSONSave, setJSONSave] = useState<object>();
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
+  const { getRootProps, getInputProps } = useDropzone({
     onDropAccepted: (files: File[]) => {
-      setJSONSave({});
+      setJSONSave(undefined);
+      setAcceptedFiles([]);
       const [f] = files;
 
       const formData = new FormData();
@@ -17,8 +20,15 @@ export function ToJson() {
         body: formData,
       })
         .then((r) => r.json())
-        .then(({ data }) => setJSONSave(data))
-        .catch(console.error);
+        .then(({ data }) => {
+          setJSONSave(data);
+          setAcceptedFiles([f]);
+          toast.success("File converted to .json successfully!");
+        })
+        .catch(e => {
+          console.error(e);
+          toast.error("Could not convert .sav to .json, please try again.");
+        });
     },
     maxFiles: 1,
     accept: { "application/octet-stream": [".sav"] },
