@@ -65,9 +65,10 @@ export function ToJson() {
               <Download />
             </button>{" "}
             <button
-              onClick={() =>
-                navigator.clipboard.writeText(JSON.stringify(JSONSave, null, 2))
-              }
+              onClick={() => {
+                navigator.clipboard.writeText(JSON.stringify(JSONSave, null, 2));
+                toast.success("JSON copied to clipboard!");
+              }}
               title="Copy JSON to clipboard"
             >
               <Copy />
